@@ -23,25 +23,51 @@ class EventQueue:
 
 
 class EventHandler:
+    def __init__(self, app, listeners):
+        self.app = app
+        self.listeners = listeners
+        
+    def handle(self, event):
+        for listener in self.listeners:
+            if listener.hasFound(event):
+                listener.performAction()
+
+
+class EventListener:
+    def hasFound(self, event):
+        raise NotImplementedError('EventListener class hasFound method is abstract')
+
+    def performAction(self):
+        raise NotImplementedError('EventListener class performAction method is abstract')
+
+
+class AppQuitListener(EventListener):
+    def __init__(self, app):
+        self.app = app
+
+    def hasFound(self, event):
+        return event.type == pygame.QUIT
+
+    def performAction(self):
+        self.app.stop()
+
+
+class StartGameListener(EventListener):
     def __init__(self, app):
         self.app = app
         
-    def handle(self, event):
-        if event.type == pygame.QUIT:
-            self.app.stop()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.app.startGame()
+    def hasFound(self, event):
+        return event.type == pygame.MOUSEBUTTONDOWN
+
+    def performAction(self):
+        self.app.startGame()
 
 
 class App:
     def __init__(self):
-        self.window = pygame.display.set_mode((500, 500))
-        pygame.display.set_caption('VersuSpace')
-        self.menuscreen = MenuScreen()
-        self.gamescreen = GameScreen()
-        self.currentscreen = self.menuscreen
-        self.queue = EventQueue()
-        self.handler = EventHandler(self)
+        self.setupWindow()
+        self.setupScreens()
+        self.setupEvents()
         self.running = True
 
     def run(self):
@@ -55,6 +81,21 @@ class App:
 
     def startGame(self):
         self.currentscreen = self.gamescreen
+
+    def setupWindow(self):
+        self.window = pygame.display.set_mode((500, 500))
+        pygame.display.set_caption('VersuSpace')
+
+    def setupScreens(self):
+        self.menuscreen = MenuScreen()
+        self.gamescreen = GameScreen()
+        self.currentscreen = self.menuscreen
+
+    def setupEvents(self):
+        self.quitlistener = AppQuitListener(self)
+        self.startgamelistener = StartGameListener(self)
+        self.queue = EventQueue()
+        self.handler = EventHandler(self, [self.quitlistener, self.startgamelistener])
 
 
 def main():
