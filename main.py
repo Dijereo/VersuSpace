@@ -5,6 +5,7 @@ class Colors:
     BLACK = (0, 0, 0)
     GREEN = (0, 255, 0)
     RED = (255, 0, 0)
+    YELLOW = (255, 255, 0)
 
 
 class Button:
@@ -45,17 +46,22 @@ class MenuScreen(Screen):
         super().__init__(app)
         self.play_button = Button(
             'Consolas', 30, 'Play', Colors.GREEN, pygame.Rect(
-                app.width // 4, app.height // 5, app.width // 2, app.height // 5))
+                app.width // 4, app.height // 7, app.width // 2, app.height // 7))
+        self.help_button = Button(
+            'Consolas', 30, 'Help', Colors.YELLOW, pygame.Rect(
+                app.width // 4, 3 * app.height // 7, app.width // 2, app.height // 7))
         self.exit_button = Button(
             'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
-                app.width // 4, 3 * app.height // 5, app.width // 2, app.height // 5))
+                app.width // 4, 5 * app.height // 7, app.width // 2, app.height // 7))
         self.handler.add_listeners([
             ButtonClickListener(self.play_button, app.start_game),
+            ButtonClickListener(self.help_button, app.start_game),
             ButtonClickListener(self.exit_button, app.stop)])
 
     def draw(self, window):
         window.fill(Colors.BLACK)
         self.play_button.draw(window)
+        self.help_button.draw(window)
         self.exit_button.draw(window)
 
 
