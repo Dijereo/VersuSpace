@@ -3,13 +3,15 @@ import pygame
 
 class Colors:
     BLACK = (0, 0, 0)
-    GREEN = (0, 255, 0)
     RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
+    ORANGE = (255, 128, 0)
 
 
 class Button:
-    BORDER_SIZE = 5
+    BORDER_SIZE = 10
 
     def __init__(self, font_name, font_size, text, color, rect):
         font = pygame.font.SysFont(font_name, font_size)
@@ -72,9 +74,15 @@ class ComingSoonScreen(Screen):
         self.text_surface = font.render('Coming Soon', True, Colors.GREEN)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = (app.width // 2, app.height // 2)
+        self.back_button = Button(
+            'Consolas', 30, 'Back', Colors.ORANGE, pygame.Rect(
+                3 * app.width // 4, 6 * app.height // 7, app.width // 4, app.height // 7))
+        self.handler.add_listeners([
+            ButtonClickListener(self.back_button, app.display_menu)])
 
     def draw(self, window):
         window.fill(Colors.BLACK)
+        self.back_button.draw(window)
         window.blit(self.text_surface, self.text_rect)
 
 
@@ -149,6 +157,9 @@ class App:
 
     def display_coming_soon(self):
         self.current_screen = self.coming_soon_screen
+
+    def display_menu(self):
+        self.current_screen = self.menu_screen
 
 
 def main():
