@@ -54,8 +54,8 @@ class MenuScreen(Screen):
             'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
                 app.width // 4, 5 * app.height // 7, app.width // 2, app.height // 7))
         self.handler.add_listeners([
-            ButtonClickListener(self.play_button, app.start_game),
-            ButtonClickListener(self.help_button, app.start_game),
+            ButtonClickListener(self.play_button, app.display_coming_soon),
+            ButtonClickListener(self.help_button, app.display_coming_soon),
             ButtonClickListener(self.exit_button, app.stop)])
 
     def draw(self, window):
@@ -65,12 +65,17 @@ class MenuScreen(Screen):
         self.exit_button.draw(window)
 
 
-class GameScreen(Screen):
+class ComingSoonScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
+        font = pygame.font.SysFont('Consolas', 75)
+        self.text_surface = font.render('Coming Soon', True, Colors.GREEN)
+        self.text_rect = self.text_surface.get_rect()
+        self.text_rect.center = (app.width // 2, app.height // 2)
 
     def draw(self, window):
         window.fill(Colors.BLACK)
+        window.blit(self.text_surface, self.text_rect)
 
 
 class EventHandler:
@@ -126,7 +131,7 @@ class App:
         self.running = True
         self.quit_listener = AppQuitListener(self)
         self.menu_screen = MenuScreen(self)
-        self.game_screen = GameScreen(self)
+        self.coming_soon_screen = ComingSoonScreen(self)
         self.current_screen = self.menu_screen
 
     def run(self):
@@ -142,8 +147,8 @@ class App:
     def stop(self):
         self.running = False
 
-    def start_game(self):
-        self.current_screen = self.game_screen
+    def display_coming_soon(self):
+        self.current_screen = self.coming_soon_screen
 
 
 def main():
