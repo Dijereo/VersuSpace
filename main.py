@@ -11,17 +11,26 @@ class MenuScreen(Screen):
         window.fill((0, 0, 100))
 
 
+class GameScreen(Screen):
+    def draw(self, window):
+        window.fill((0, 100, 0))
+
+
 def main():
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     pygame.display.set_caption('VersuSpace')
     menuscreen = MenuScreen()
+    gamescreen = GameScreen()
+    currentscreen = menuscreen
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        menuscreen.draw(window)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                currentscreen = gamescreen
+        currentscreen.draw(window)
         pygame.display.update()
     pygame.quit()
 
