@@ -4,6 +4,7 @@ import pygame
 class Colors:
     BLACK = (0, 0, 0)
     GREEN = (0, 255, 0)
+    RED = (255, 0, 0)
 
 
 class Button:
@@ -40,14 +41,22 @@ class Screen:
 class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
-        self.button = Button('Consolas', 30, 'Hello', Colors.GREEN, pygame.Rect(50, 50, 200, 50))
+        self.play_button = Button(
+            'Consolas', 30, 'Play', Colors.GREEN, pygame.Rect(
+                app.width // 4, app.height // 5, app.width // 2, app.height // 5))
+        self.exit_button = Button(
+            'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
+                app.width // 4, 3 * app.height // 5, app.width // 2, app.height // 5))
         self.handler.add_listeners([
-            ButtonHoverListener(self.button),
-            ButtonClickListener(self.button, app.start_game)])
+            ButtonHoverListener(self.play_button),
+            ButtonClickListener(self.play_button, app.start_game),
+            ButtonHoverListener(self.exit_button),
+            ButtonClickListener(self.exit_button, app.stop)])
 
     def draw(self, window):
         window.fill(Colors.BLACK)
-        self.button.draw(window)
+        self.play_button.draw(window)
+        self.exit_button.draw(window)
 
 
 class GameScreen(Screen):
@@ -116,7 +125,9 @@ class ButtonClickListener(EventListener):
 
 class App:
     def __init__(self, width, height):
-        self.window = pygame.display.set_mode((width, height))
+        self.width = width
+        self.height = height
+        self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('VersuSpace')
         self.running = True
         self.quit_listener = AppQuitListener(self)
