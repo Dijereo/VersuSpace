@@ -2,13 +2,20 @@ import pygame
 
 
 class Button:
-    def __init__(self, font_name, font_size, text, color, center):
+    BORDER_SIZE = 5
+
+    def __init__(self, font_name, font_size, text, color, rect):
         font = pygame.font.SysFont(font_name, font_size)
-        self.text_surface = font.render(text, True, color)
+        self.color = color
+        self.text_surface = font.render(text, True, self.color)
+        self.rect = rect
+        self.inner_rect = self.rect.inflate(-Button.BORDER_SIZE, -Button.BORDER_SIZE)
         self.text_rect = self.text_surface.get_rect()
-        self.text_rect.center = center
+        self.text_rect.center = self.rect.center
 
     def draw(self, window):
+        pygame.draw.rect(window, self.color, self.rect)
+        pygame.draw.rect(window, (0, 0, 0), self.inner_rect)
         window.blit(self.text_surface, self.text_rect)
 
 
@@ -19,7 +26,7 @@ class Screen:
 
 class MenuScreen(Screen):
     def draw(self, window):
-        button = Button('Consolas', 30, 'Hello', (0, 0, 0), (50, 50))
+        button = Button('Consolas', 30, 'Hello', (0, 255, 0), pygame.Rect(50, 50, 200, 50))
         window.fill((0, 0, 100))
         button.draw(window)
 
