@@ -8,30 +8,45 @@ class Button:
         font = pygame.font.SysFont(font_name, font_size)
         self.color = color
         self.text_surface = font.render(text, True, self.color)
+        self.hover_text_surface = font.render(text, True, (0, 0, 0))
         self.rect = rect
         self.inner_rect = self.rect.inflate(-Button.BORDER_SIZE, -Button.BORDER_SIZE)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = self.rect.center
+        self.hovered = False
 
     def draw(self, window):
         pygame.draw.rect(window, self.color, self.rect)
-        pygame.draw.rect(window, (0, 0, 0), self.inner_rect)
-        window.blit(self.text_surface, self.text_rect)
+        if self.hovered:
+            window.blit(self.hover_text_surface, self.text_rect)
+        else:
+            pygame.draw.rect(window, (0, 0, 0), self.inner_rect)
+            window.blit(self.text_surface, self.text_rect)
 
 
 class Screen:
+    def __init__(self, app):
+        self.handler = EventHandler([app.quit_listener, app.start_game_listener])
+
     def draw(self, window):
         raise NotImplementedError('Screen class draw method is abstract')
 
 
 class MenuScreen(Screen):
+    def __init__(self, app):
+        super().__init__(app)
+        self.button = Button('Consolas', 30, 'Hello', (0, 255, 0), pygame.Rect(50, 50, 200, 50))
+        self.handler.add_listeners([ButtonHoverListener(self.button)])
+
     def draw(self, window):
-        button = Button('Consolas', 30, 'Hello', (0, 255, 0), pygame.Rect(50, 50, 200, 50))
         window.fill((0, 0, 100))
-        button.draw(window)
+        self.button.draw(window)
 
 
 class GameScreen(Screen):
+    def __init__(self, app):
+        super().__init__(app)
+
     def draw(self, window):
         window.fill((0, 100, 0))
 
@@ -45,6 +60,9 @@ class EventQueue:
 class EventHandler:
     def __init__(self, listeners):
         self.listeners = listeners
+
+    def add_listeners(self, listeners):
+        self.listeners += listeners
         
     def handle(self, event):
         for listener in self.listeners:
@@ -82,22 +100,32 @@ class StartGameListener(EventListener):
         self.app.start_game()
 
 
+class ButtonHoverListener(EventListener):
+    def __init__(self, button):
+        self.button = button
+
+    def has_found(self, event):
+        return True
+
+    def perform_action(self):
+        self.button.hovered = self.button.rect.collidepoint(*pygame.mouse.get_pos())
+
+
 class App:
     def __init__(self):
         self.window = pygame.display.set_mode((500, 500))
         pygame.display.set_caption('VersuSpace')
-        self.menu_screen = MenuScreen()
-        self.game_screen = GameScreen()
-        self.current_screen = self.menu_screen
+        self.running = True
         self.quit_listener = AppQuitListener(self)
         self.start_game_listener = StartGameListener(self)
         self.queue = EventQueue()
-        self.handler = EventHandler([self.quit_listener, self.start_game_listener])
-        self.running = True
+        self.menu_screen = MenuScreen(self)
+        self.game_screen = GameScreen(self)
+        self.current_screen = self.menu_screen
 
     def run(self):
         while self.running:
-            self.queue.send_events_to(self.handler)
+            self.queue.send_events_to(self.current_screen.handler)
             self.current_screen.draw(self.window)
             pygame.display.update()
 
