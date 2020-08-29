@@ -1,6 +1,11 @@
 import pygame
 
 
+class Colors:
+    BLACK = (0, 0, 0)
+    GREEN = (0, 255, 0)
+
+
 class Button:
     BORDER_SIZE = 5
 
@@ -8,7 +13,7 @@ class Button:
         font = pygame.font.SysFont(font_name, font_size)
         self.color = color
         self.text_surface = font.render(text, True, self.color)
-        self.hover_text_surface = font.render(text, True, (0, 0, 0))
+        self.hover_text_surface = font.render(text, True, Colors.BLACK)
         self.rect = rect
         self.inner_rect = self.rect.inflate(-Button.BORDER_SIZE, -Button.BORDER_SIZE)
         self.text_rect = self.text_surface.get_rect()
@@ -20,7 +25,7 @@ class Button:
         if self.hovered:
             window.blit(self.hover_text_surface, self.text_rect)
         else:
-            pygame.draw.rect(window, (0, 0, 0), self.inner_rect)
+            pygame.draw.rect(window, Colors.BLACK, self.inner_rect)
             window.blit(self.text_surface, self.text_rect)
 
 
@@ -35,14 +40,13 @@ class Screen:
 class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
-        self.button = Button('Consolas', 30, 'Hello', (0, 255, 0), pygame.Rect(50, 50, 200, 50))
+        self.button = Button('Consolas', 30, 'Hello', Colors.GREEN, pygame.Rect(50, 50, 200, 50))
         self.handler.add_listeners([
             ButtonHoverListener(self.button),
-            ButtonClickListener(self.button, app.start_game)
-        ])
+            ButtonClickListener(self.button, app.start_game)])
 
     def draw(self, window):
-        window.fill((0, 0, 100))
+        window.fill(Colors.BLACK)
         self.button.draw(window)
 
 
@@ -51,7 +55,7 @@ class GameScreen(Screen):
         super().__init__(app)
 
     def draw(self, window):
-        window.fill((0, 100, 0))
+        window.fill(Colors.BLACK)
 
 
 class EventHandler:
@@ -111,8 +115,8 @@ class ButtonClickListener(EventListener):
 
 
 class App:
-    def __init__(self):
-        self.window = pygame.display.set_mode((500, 500))
+    def __init__(self, width, height):
+        self.window = pygame.display.set_mode((width, height))
         pygame.display.set_caption('VersuSpace')
         self.running = True
         self.quit_listener = AppQuitListener(self)
@@ -139,8 +143,7 @@ class App:
 
 def main():
     pygame.init()
-    pygame.font.init()
-    app = App()
+    app = App(500, 500)
     app.run()
     pygame.quit()
 
