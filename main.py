@@ -19,11 +19,13 @@ class Button:
         self.inner_rect = self.rect.inflate(-Button.BORDER_SIZE, -Button.BORDER_SIZE)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = self.rect.center
-        self.hovered = False
+
+    def is_hovered(self):
+        return self.rect.collidepoint(*pygame.mouse.get_pos())
 
     def draw(self, window):
         pygame.draw.rect(window, self.color, self.rect)
-        if self.hovered:
+        if self.is_hovered():
             window.blit(self.hover_text_surface, self.text_rect)
         else:
             pygame.draw.rect(window, Colors.BLACK, self.inner_rect)
@@ -48,9 +50,7 @@ class MenuScreen(Screen):
             'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
                 app.width // 4, 3 * app.height // 5, app.width // 2, app.height // 5))
         self.handler.add_listeners([
-            ButtonHoverListener(self.play_button),
             ButtonClickListener(self.play_button, app.start_game),
-            ButtonHoverListener(self.exit_button),
             ButtonClickListener(self.exit_button, app.stop)])
 
     def draw(self, window):
@@ -99,25 +99,13 @@ class AppQuitListener(EventListener):
         self.app.stop()
 
 
-class ButtonHoverListener(EventListener):
-    def __init__(self, button):
-        self.button = button
-
-    def has_found(self, event):
-        return True
-
-    def perform_action(self):
-        self.button.hovered = self.button.rect.collidepoint(*pygame.mouse.get_pos())
-
-
 class ButtonClickListener(EventListener):
     def __init__(self, button, onclick):
         self.button = button
         self.onclick = onclick
 
     def has_found(self, event):
-        return (event.type == pygame.MOUSEBUTTONDOWN
-                and self.button.rect.collidepoint(event.pos))
+        return event.type == pygame.MOUSEBUTTONDOWN and self.button.is_hovered()
 
     def perform_action(self):
         self.onclick()
