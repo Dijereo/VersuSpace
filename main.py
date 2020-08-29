@@ -16,22 +16,30 @@ class GameScreen(Screen):
         window.fill((0, 100, 0))
 
 
+class App:
+    def __init__(self):
+        self.window = pygame.display.set_mode((500, 500))
+        pygame.display.set_caption('VersuSpace')
+        self.menuscreen = MenuScreen()
+        self.gamescreen = GameScreen()
+        self.currentscreen = self.menuscreen
+        self.running = True
+
+    def run(self):
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.currentscreen = self.gamescreen
+            self.currentscreen.draw(self.window)
+            pygame.display.update()
+
+
 def main():
     pygame.init()
-    window = pygame.display.set_mode((500, 500))
-    pygame.display.set_caption('VersuSpace')
-    menuscreen = MenuScreen()
-    gamescreen = GameScreen()
-    currentscreen = menuscreen
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                currentscreen = gamescreen
-        currentscreen.draw(window)
-        pygame.display.update()
+    app = App()
+    app.run()
     pygame.quit()
 
 
