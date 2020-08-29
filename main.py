@@ -26,7 +26,7 @@ class Button:
 
 class Screen:
     def __init__(self, app):
-        self.handler = EventHandler([app.quit_listener, app.start_game_listener])
+        self.handler = EventHandler([app.quit_listener])
 
     def draw(self, window):
         raise NotImplementedError('Screen class draw method is abstract')
@@ -36,7 +36,10 @@ class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.button = Button('Consolas', 30, 'Hello', (0, 255, 0), pygame.Rect(50, 50, 200, 50))
-        self.handler.add_listeners([ButtonHoverListener(self.button)])
+        self.handler.add_listeners([
+            ButtonHoverListener(self.button),
+            ButtonClickListener(self.button, app.start_game)
+        ])
 
     def draw(self, window):
         window.fill((0, 0, 100))
@@ -49,12 +52,6 @@ class GameScreen(Screen):
 
     def draw(self, window):
         window.fill((0, 100, 0))
-
-
-class EventQueue:
-    def send_events_to(self, handler):
-        for event in pygame.event.get():
-            handler.handle(event)
 
 
 class EventHandler:
@@ -89,17 +86,6 @@ class AppQuitListener(EventListener):
         self.app.stop()
 
 
-class StartGameListener(EventListener):
-    def __init__(self, app):
-        self.app = app
-        
-    def has_found(self, event):
-        return event.type == pygame.MOUSEBUTTONDOWN
-
-    def perform_action(self):
-        self.app.start_game()
-
-
 class ButtonHoverListener(EventListener):
     def __init__(self, button):
         self.button = button
@@ -111,23 +97,38 @@ class ButtonHoverListener(EventListener):
         self.button.hovered = self.button.rect.collidepoint(*pygame.mouse.get_pos())
 
 
+class ButtonClickListener(EventListener):
+    def __init__(self, button, onclick):
+        self.button = button
+        self.onclick = onclick
+
+    def has_found(self, event):
+        return (event.type == pygame.MOUSEBUTTONDOWN
+                and self.button.rect.collidepoint(event.pos))
+
+    def perform_action(self):
+        self.onclick()
+
+
 class App:
     def __init__(self):
         self.window = pygame.display.set_mode((500, 500))
         pygame.display.set_caption('VersuSpace')
         self.running = True
         self.quit_listener = AppQuitListener(self)
-        self.start_game_listener = StartGameListener(self)
-        self.queue = EventQueue()
         self.menu_screen = MenuScreen(self)
         self.game_screen = GameScreen(self)
         self.current_screen = self.menu_screen
 
     def run(self):
         while self.running:
-            self.queue.send_events_to(self.current_screen.handler)
+            self.send_events_to()
             self.current_screen.draw(self.window)
             pygame.display.update()
+
+    def send_events_to(self):
+        for event in pygame.event.get():
+            self.current_screen.handler.handle(event)
 
     def stop(self):
         self.running = False
