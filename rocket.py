@@ -37,7 +37,7 @@ class Rocket:
         thrust = Vector2()
         if self.engine_on:
             thrust.from_polar((200, self.angle))
-        drag = 0 * self.velocity
+        drag = -0.2 * self.velocity
         return thrust + drag
 
     def set_engine_state(self, on):
