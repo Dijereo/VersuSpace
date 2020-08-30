@@ -51,3 +51,14 @@ class KeyPressedListener(EventListener):
 
     def has_found(self, event):
         return pygame.key.get_pressed()[self.key]
+
+
+class StateListener:
+    def state_occurred(self):
+        raise NotImplementedError('StateListener state_occurred method is abstract')
+
+    def perform_action(self):
+        raise NotImplementedError('StateListener perform_action method is abstract')
+
+    def perform_alternative(self):
+        raise NotImplementedError('StateListener perform_default method is abstract')
