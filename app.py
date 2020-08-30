@@ -16,7 +16,7 @@ class App:
 
     def run(self):
         while self.running:
-            self.send_events_to()
+            self.current_screen.handler.handle_events()
             self.current_screen.draw(self.window)
             pygame.display.update()
 
@@ -31,7 +31,3 @@ class App:
 
     def start_game(self):
         self.current_screen = self.game_screen
-
-    def send_events_to(self):
-        for event in pygame.event.get():
-            self.current_screen.handler.handle(event)
