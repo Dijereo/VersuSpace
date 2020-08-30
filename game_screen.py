@@ -6,7 +6,10 @@ class GameScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.rocket = Rocket((app.width // 2, app.height // 2), 0, Colors.RED)
-        self.handler.add_state_listeners([ThrustListener(self.rocket)])
+        self.handler.add_state_listeners([
+            ThrustListener(self.rocket),
+            RotationListener(self.rocket)
+        ])
 
     def step(self, time):
         self.rocket.move(time, (self.width, self.height))

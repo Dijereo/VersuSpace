@@ -43,6 +43,9 @@ class Rocket:
     def set_engine_state(self, on):
         self.engine_on = on
 
+    def set_rotation(self, direction):
+        self.angular = 5 * direction
+
     def try_wrap(self, width, height):
         if self.position.x < 0:
             self.position.x += width
@@ -56,11 +59,33 @@ class Rocket:
 
 class ThrustListener(KeyPressedListener):
     def __init__(self, rocket):
+        super().__init__(pygame.K_UP)
         self.rocket = rocket
-        super(ThrustListener, self).__init__(pygame.K_UP)
 
     def perform_action(self):
         self.rocket.set_engine_state(True)
 
     def perform_alternative(self):
         self.rocket.set_engine_state(False)
+
+
+class RotationListener(StateListener):
+    def __init__(self, rocket):
+        super().__init__()
+        self.rocket = rocket
+        self.direction = 0
+
+    def state_occurred(self):
+        self.direction = 0
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_RIGHT]:
+            self.direction += 1
+        elif pressed[pygame.K_LEFT]:
+            self.direction -= 1
+        return self.direction != 0
+
+    def perform_action(self):
+        self.rocket.set_rotation(self.direction)
+
+    def perform_alternative(self):
+        self.rocket.set_rotation(0)

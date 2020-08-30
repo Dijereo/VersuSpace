@@ -14,7 +14,7 @@ class App:
         self.coming_soon_screen = ComingSoonScreen(self)
         self.current_screen = self.menu_screen
         self.clock = pygame.time.Clock()
-        self.fps = 30
+        self.fps = 60
 
     def run(self):
         while self.running:
