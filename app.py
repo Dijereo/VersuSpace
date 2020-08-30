@@ -13,12 +13,16 @@ class App:
         self.game_screen = GameScreen(self)
         self.coming_soon_screen = ComingSoonScreen(self)
         self.current_screen = self.menu_screen
+        self.clock = pygame.time.Clock()
+        self.fps = 30
 
     def run(self):
         while self.running:
             self.current_screen.handler.handle_events()
+            self.current_screen.step(1 / self.fps)
             self.current_screen.draw(self.window)
             pygame.display.update()
+            self.clock.tick(self.fps)
 
     def stop(self):
         self.running = False

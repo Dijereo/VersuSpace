@@ -7,19 +7,19 @@ class Rocket:
     def __init__(self, pos, angle, color):
         self.position = Vector2(pos)
         self.velocity = Vector2(0, 0)
-        self.acceleration = Vector2(-0.005, -0.004)
         self.angular = 0
         self.angle = angle
         self.color = color
-        self.thrust = False
+        self.engine_on = False
 
     def draw(self, window):
         pygame.draw.polygon(window, self.color, self.get_polygon())
 
     def move(self, dt, screen_size):
         self.position += dt * self.velocity
-        self.velocity += dt * self.acceleration
+        self.velocity += dt * self.get_acceleration()
         self.try_wrap(screen_size[0], screen_size[1])
+        self.angle += self.angular
 
     def get_polygon(self):
         vertex1 = Vector2()
@@ -33,18 +33,25 @@ class Rocket:
         vertex3 = self.position + vertex3
         return [vertex1, vertex2, vertex3]
 
-    def set_thrust(self, on):
-        self.thrust = on
+    def get_acceleration(self):
+        thrust = Vector2()
+        if self.engine_on:
+            thrust.from_polar((200, self.angle))
+        drag = 0 * self.velocity
+        return thrust + drag
+
+    def set_engine_state(self, on):
+        self.engine_on = on
 
     def try_wrap(self, width, height):
         if self.position.x < 0:
-            self.position.x = width
+            self.position.x += width
         elif self.position.x > width:
-            self.position.x = 0
+            self.position.x -= width
         if self.position.y < 0:
-            self.position.y = height
+            self.position.y += height
         elif self.position.y > height:
-            self.position.y = 0
+            self.position.y -= height
 
 
 class ThrustListener(KeyPressedListener):
@@ -53,7 +60,7 @@ class ThrustListener(KeyPressedListener):
         super(ThrustListener, self).__init__(pygame.K_UP)
 
     def perform_action(self):
-        self.rocket.set_thrust(True)
+        self.rocket.set_engine_state(True)
 
     def perform_alternative(self):
-        self.rocket.set_thrust(False)
+        self.rocket.set_engine_state(False)

@@ -10,6 +10,9 @@ class Screen:
         self.handler = EventHandler()
         self.handler.add_event_listeners([app.quit_listener])
 
+    def step(self, time):
+        pass
+
     def draw(self, window):
         raise NotImplementedError('Screen class draw method is abstract')
 
