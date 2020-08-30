@@ -1,4 +1,4 @@
-from screen import *
+from app import *
 
 
 def main():

@@ -3,38 +3,6 @@ from colors import *
 from event import *
 
 
-class App:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.window = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption('VersuSpace')
-        self.running = True
-        self.quit_listener = AppQuitListener(self)
-        self.menu_screen = MenuScreen(self)
-        self.coming_soon_screen = ComingSoonScreen(self)
-        self.current_screen = self.menu_screen
-
-    def run(self):
-        while self.running:
-            self.send_events_to()
-            self.current_screen.draw(self.window)
-            pygame.display.update()
-
-    def send_events_to(self):
-        for event in pygame.event.get():
-            self.current_screen.handler.handle(event)
-
-    def stop(self):
-        self.running = False
-
-    def display_coming_soon(self):
-        self.current_screen = self.coming_soon_screen
-
-    def display_menu(self):
-        self.current_screen = self.menu_screen
-
-
 class Screen:
     def __init__(self, app):
         self.handler = EventHandler([app.quit_listener])
@@ -56,7 +24,7 @@ class MenuScreen(Screen):
             'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
                 app.width // 4, 5 * app.height // 7, app.width // 2, app.height // 7))
         self.handler.add_listeners([
-            ButtonClickListener(self.play_button, app.display_coming_soon),
+            ButtonClickListener(self.play_button, app.start_game),
             ButtonClickListener(self.help_button, app.display_coming_soon),
             ButtonClickListener(self.exit_button, app.stop)])
 
