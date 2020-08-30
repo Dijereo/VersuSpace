@@ -12,6 +12,23 @@ class Screen:
         raise NotImplementedError('Screen class draw method is abstract')
 
 
+class ScreenWithButtons(Screen):
+    def __init__(self, app):
+        super().__init__(app)
+        self.buttons = {}
+        for name, button, onclick in self.construct_buttons(app):
+            self.buttons[name] = button
+            self.handler.add_event_listeners([ButtonClickListener(button, onclick)])
+            self.handler.add_state_listeners([ButtonHoverListener(button)])
+
+    def construct_buttons(self, app):
+        raise NotImplementedError('ScreenWithButtons construct_buttons method is abstract')
+
+    def draw(self, window):
+        for button in self.buttons.values():
+            button.draw(window)
+
+
 class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
@@ -40,22 +57,22 @@ class MenuScreen(Screen):
         self.exit_button.draw(window)
 
 
-class ComingSoonScreen(Screen):
+class ComingSoonScreen(ScreenWithButtons):
     def __init__(self, app):
         super().__init__(app)
         font = pygame.font.SysFont('Consolas', 75)
         self.text_surface = font.render('Coming Soon', True, Colors.GREEN)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = (app.width // 2, app.height // 2)
-        self.back_button = Button(
-            'Consolas', 30, 'Back', Colors.ORANGE, pygame.Rect(
-                3 * app.width // 4, 6 * app.height // 7, app.width // 4, app.height // 7))
-        self.handler.add_event_listeners([
-            ButtonClickListener(self.back_button, app.display_menu)])
-        self.handler.add_state_listeners([
-            ButtonHoverListener(self.back_button)])
+
+    def construct_buttons(self, app):
+        return [('back',
+                 Button('Consolas', 30, 'Back', Colors.ORANGE, pygame.Rect(
+                     3 * app.width // 4, 6 * app.height // 7,
+                     app.width // 4, app.height // 7)),
+                 app.display_menu)]
 
     def draw(self, window):
         window.fill(Colors.BLACK)
-        self.back_button.draw(window)
+        super().draw(window)
         window.blit(self.text_surface, self.text_rect)
