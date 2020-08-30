@@ -39,7 +39,8 @@ class ButtonClickListener(EventListener):
         self.onclick = onclick
 
     def has_found(self, event):
-        return event.type == pygame.MOUSEBUTTONDOWN and self.button.is_hovered()
+        return (event.type == pygame.MOUSEBUTTONDOWN
+                and self.button.is_hovered(*pygame.mouse.get_pos()))
 
     def perform_action(self):
         self.onclick()
@@ -62,3 +63,17 @@ class StateListener:
 
     def perform_alternative(self):
         raise NotImplementedError('StateListener perform_default method is abstract')
+
+
+class ButtonHoverListener(StateListener):
+    def __init__(self, button):
+        self.button = button
+
+    def state_occurred(self):
+        return self.button.is_hovered(*pygame.mouse.get_pos())
+
+    def perform_action(self):
+        self.button.set_hovered(True)
+
+    def perform_alternative(self):
+        self.button.set_hovered(False)

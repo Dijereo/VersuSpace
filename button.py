@@ -15,14 +15,18 @@ class Button:
         self.inner_rect = self.rect.inflate(-Button.BORDER_SIZE, -Button.BORDER_SIZE)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = self.rect.center
-
-    def is_hovered(self):
-        return self.rect.collidepoint(*pygame.mouse.get_pos())
+        self.hovered = False
 
     def draw(self, window):
         pygame.draw.rect(window, self.color, self.rect)
-        if self.is_hovered():
+        if self.hovered:
             window.blit(self.hover_text_surface, self.text_rect)
         else:
             pygame.draw.rect(window, Colors.BLACK, self.inner_rect)
             window.blit(self.text_surface, self.text_rect)
+
+    def is_hovered(self, x, y):
+        return self.rect.collidepoint(x, y)
+
+    def set_hovered(self, hovered):
+        self.hovered = hovered
