@@ -10,4 +10,5 @@ class GameScreen(Screen):
 
     def draw(self, window):
         window.fill(Colors.BLACK)
+        self.rocket.move(0.03, (self.width, self.height))
         self.rocket.draw(window)

@@ -5,6 +5,8 @@ from event import *
 
 class Screen:
     def __init__(self, app):
+        self.width = app.width
+        self.height = app.height
         self.handler = EventHandler()
         self.handler.add_event_listeners([app.quit_listener])
 

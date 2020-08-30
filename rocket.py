@@ -5,13 +5,20 @@ from event import *
 
 class Rocket:
     def __init__(self, pos, angle, color):
-        self.pos = pos
+        self.pos = Vector2(pos)
+        self.velocity = Vector2(1, 1)
+        self.acceleration = Vector2(-0.001, -0.002)
         self.angle = angle
         self.color = color
         self.thrust = False
 
     def draw(self, window):
         pygame.draw.polygon(window, self.color, self.get_polygon())
+
+    def move(self, dt, screen_size):
+        self.pos += dt * self.velocity
+        self.velocity += dt * self.acceleration
+        self.try_wrap(screen_size[0], screen_size[1])
 
     def get_polygon(self):
         vertex1 = Vector2()
@@ -23,7 +30,17 @@ class Rocket:
         return [self.pos, vertex1, vertex2]
 
     def set_thrust(self, on):
-        self.color = (255, 0, 0) if on else (0, 0, 255)
+        self.thrust = on
+
+    def try_wrap(self, width, height):
+        if self.pos.x < 0:
+            self.pos.x = width
+        elif self.pos.x > width:
+            self.pos.x = 0
+        if self.pos.y < 0:
+            self.pos.y = height
+        elif self.pos.y > height:
+            self.pos.y = 0
 
 
 class ThrustListener(KeyPressedListener):
