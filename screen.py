@@ -29,32 +29,27 @@ class ScreenWithButtons(Screen):
             button.draw(window)
 
 
-class MenuScreen(Screen):
+class MenuScreen(ScreenWithButtons):
     def __init__(self, app):
         super().__init__(app)
-        self.play_button = Button(
-            'Consolas', 30, 'Play', Colors.GREEN, pygame.Rect(
-                app.width // 4, app.height // 7, app.width // 2, app.height // 7))
-        self.help_button = Button(
-            'Consolas', 30, 'Help', Colors.YELLOW, pygame.Rect(
-                app.width // 4, 3 * app.height // 7, app.width // 2, app.height // 7))
-        self.exit_button = Button(
-            'Consolas', 30, 'Exit', Colors.RED, pygame.Rect(
-                app.width // 4, 5 * app.height // 7, app.width // 2, app.height // 7))
-        self.handler.add_event_listeners([
-            ButtonClickListener(self.play_button, app.start_game),
-            ButtonClickListener(self.help_button, app.display_coming_soon),
-            ButtonClickListener(self.exit_button, app.stop)])
-        self.handler.add_state_listeners([
-            ButtonHoverListener(self.play_button),
-            ButtonHoverListener(self.help_button),
-            ButtonHoverListener(self.exit_button)])
+
+    def construct_buttons(self, app):
+        return [('play', Button('Consolas', 30, 'Play', Colors.GREEN,
+                                pygame.Rect(app.width // 4, app.height // 7,
+                                            app.width // 2, app.height // 7)),
+                 app.start_game),
+                ('help', Button('Consolas', 30, 'Help', Colors.YELLOW,
+                                pygame.Rect(app.width // 4, 3 * app.height // 7,
+                                            app.width // 2, app.height // 7)),
+                 app.display_coming_soon),
+                ('exit', Button('Consolas', 30, 'Help', Colors.RED,
+                                pygame.Rect(app.width // 4, 5 * app.height // 7,
+                                            app.width // 2, app.height // 7)),
+                 app.stop)]
 
     def draw(self, window):
         window.fill(Colors.BLACK)
-        self.play_button.draw(window)
-        self.help_button.draw(window)
-        self.exit_button.draw(window)
+        super().draw(window)
 
 
 class ComingSoonScreen(ScreenWithButtons):
@@ -66,10 +61,9 @@ class ComingSoonScreen(ScreenWithButtons):
         self.text_rect.center = (app.width // 2, app.height // 2)
 
     def construct_buttons(self, app):
-        return [('back',
-                 Button('Consolas', 30, 'Back', Colors.ORANGE, pygame.Rect(
-                     3 * app.width // 4, 6 * app.height // 7,
-                     app.width // 4, app.height // 7)),
+        return [('back', Button('Consolas', 30, 'Back', Colors.ORANGE,
+                                pygame.Rect(3 * app.width // 4, 6 * app.height // 7,
+                                            app.width // 4, app.height // 7)),
                  app.display_menu)]
 
     def draw(self, window):
