@@ -56,14 +56,6 @@ class ButtonClickListener(EventListener):
         self.onclick()
 
 
-class KeyPressedListener(EventListener):
-    def __init__(self, key):
-        self.key = key
-
-    def has_found(self, event):
-        return pygame.key.get_pressed()[self.key]
-
-
 class StateListener:
     def state_occurred(self):
         raise NotImplementedError('StateListener state_occurred method is abstract')
@@ -73,6 +65,14 @@ class StateListener:
 
     def perform_alternative(self):
         raise NotImplementedError('StateListener perform_default method is abstract')
+
+
+class KeyPressedListener(StateListener):
+    def __init__(self, key):
+        self.key = key
+
+    def state_occurred(self):
+        return pygame.key.get_pressed()[self.key]
 
 
 class ButtonHoverListener(StateListener):

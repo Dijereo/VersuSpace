@@ -13,8 +13,8 @@ class Rocket:
     def get_polygon(self):
         return [(50, 50), (50, 100), (100, 50)]
 
-    def turn_on_thrust(self):
-        self.color = (0, 255, 0)
+    def set_thrust(self, on):
+        self.color = (255, 0, 0) if on else (0, 0, 255)
 
 
 class ThrustListener(KeyPressedListener):
@@ -23,4 +23,7 @@ class ThrustListener(KeyPressedListener):
         super(ThrustListener, self).__init__(pygame.K_UP)
 
     def perform_action(self):
-        self.rocket.turn_on_thrust()
+        self.rocket.set_thrust(True)
+
+    def perform_alternative(self):
+        self.rocket.set_thrust(False)
