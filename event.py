@@ -43,3 +43,11 @@ class ButtonClickListener(EventListener):
 
     def perform_action(self):
         self.onclick()
+
+
+class KeyPressedListener(EventListener):
+    def __init__(self, key):
+        self.key = key
+
+    def has_found(self, event):
+        return pygame.key.get_pressed()[self.key]
