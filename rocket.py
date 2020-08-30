@@ -1,3 +1,5 @@
+from pygame.math import Vector2
+
 from event import *
 
 
@@ -6,12 +8,19 @@ class Rocket:
         self.pos = pos
         self.angle = angle
         self.color = color
+        self.thrust = False
 
     def draw(self, window):
         pygame.draw.polygon(window, self.color, self.get_polygon())
 
     def get_polygon(self):
-        return [(50, 50), (50, 100), (100, 50)]
+        vertex1 = Vector2()
+        vertex1.from_polar((25, self.angle - 15))
+        vertex1 = self.pos - vertex1
+        vertex2 = Vector2()
+        vertex2.from_polar((25, self.angle + 15))
+        vertex2 = self.pos - vertex2
+        return [self.pos, vertex1, vertex2]
 
     def set_thrust(self, on):
         self.color = (255, 0, 0) if on else (0, 0, 255)
