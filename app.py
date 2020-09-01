@@ -12,6 +12,7 @@ class App:
         self.menu_screen = MenuScreen(self)
         self.game_screen = GameScreen(self)
         self.coming_soon_screen = ComingSoonScreen(self)
+        self.instruction_screen = InstructionScreen(self)
         self.current_screen = self.menu_screen
         self.clock = pygame.time.Clock()
         self.fps = 60
@@ -32,6 +33,9 @@ class App:
 
     def display_menu(self):
         self.current_screen = self.menu_screen
+
+    def display_instructions(self):
+        self.current_screen = self.instruction_screen
 
     def start_game(self):
         self.current_screen = self.game_screen
