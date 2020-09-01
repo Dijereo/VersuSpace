@@ -13,25 +13,22 @@ class Rocket:
         self.engine_on = False
 
     def draw(self, window):
-        pygame.draw.polygon(window, self.color, self.get_polygon())
+        pygame.draw.polygon(window, self.color, self.get_vertices())
 
     def move(self, dt, screen_size):
         self.position += dt * self.velocity
         self.velocity += dt * self.get_acceleration()
-        self.try_wrap(screen_size[0], screen_size[1])
+        self.wrap_position(screen_size[0], screen_size[1])
         self.angle += self.angular
 
-    def get_polygon(self):
-        vertex1 = Vector2()
-        vertex1.from_polar((16, self.angle))
-        vertex1 = vertex1 + self.position
-        vertex2 = Vector2()
-        vertex2.from_polar((12, self.angle + 225))
-        vertex2 = self.position + vertex2
-        vertex3 = Vector2()
-        vertex3.from_polar((12, self.angle - 225))
-        vertex3 = self.position + vertex3
-        return [vertex1, vertex2, vertex3]
+    def get_vertices(self):
+        vertices = [Vector2() for _ in range(3)]
+        pos_offsets = [12, 16, 12]
+        angle_offsets = [-225, 0, 225]
+        for i in range(len(vertices)):
+            vertices[i].from_polar((pos_offsets[i], self.angle + angle_offsets[i]))
+            vertices[i] += self.position
+        return vertices
 
     def get_acceleration(self):
         thrust = Vector2()
@@ -46,20 +43,14 @@ class Rocket:
     def set_rotation(self, direction):
         self.angular = 5 * direction
 
-    def try_wrap(self, width, height):
-        if self.position.x < 0:
-            self.position.x += width
-        elif self.position.x > width:
-            self.position.x -= width
-        if self.position.y < 0:
-            self.position.y += height
-        elif self.position.y > height:
-            self.position.y -= height
+    def wrap_position(self, width, height):
+        self.position.x %= width
+        self.position.y %= height
 
 
 class ThrustListener(KeyPressedListener):
-    def __init__(self, rocket):
-        super().__init__(pygame.K_UP)
+    def __init__(self, rocket, key):
+        super().__init__(key)
         self.rocket = rocket
 
     def perform_action(self):
@@ -70,17 +61,19 @@ class ThrustListener(KeyPressedListener):
 
 
 class RotationListener(StateListener):
-    def __init__(self, rocket):
+    def __init__(self, rocket, cw_key, ccw_key):
         super().__init__()
         self.rocket = rocket
+        self.cw_key = cw_key
+        self.ccw_key = ccw_key
         self.direction = 0
 
     def state_occurred(self):
         self.direction = 0
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_RIGHT]:
+        if pressed[self.cw_key]:
             self.direction += 1
-        elif pressed[pygame.K_LEFT]:
+        elif pressed[self.ccw_key]:
             self.direction -= 1
         return self.direction != 0
 
