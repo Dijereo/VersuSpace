@@ -11,15 +11,23 @@ class Rocket:
         self.angle = angle
         self.color = color
         self.engine_on = False
+        self.bullets = []
 
     def draw(self, window):
         pygame.draw.polygon(window, self.color, self.get_vertices())
+        for bullet in self.bullets:
+            bullet.draw(window)
 
     def move(self, dt, screen_size):
         self.position += dt * self.velocity
         self.velocity += dt * self.get_acceleration()
         self.wrap_position(screen_size[0], screen_size[1])
         self.angle += self.angular
+        for bullet in self.bullets:
+            bullet.move(dt)
+
+    def shoot(self):
+        self.bullets.append(Bullet(self.color, self.get_vertices()[1], self.angle, 500))
 
     def get_vertices(self):
         vertices = [Vector2() for _ in range(3)]
@@ -46,6 +54,21 @@ class Rocket:
     def wrap_position(self, width, height):
         self.position.x %= width
         self.position.y %= height
+
+
+class Bullet:
+    def __init__(self, color, position, direction, speed):
+        self.color = color
+        self.position = position
+        self.velocity = Vector2()
+        self.velocity.from_polar((speed, direction))
+        self.radius = 3
+
+    def draw(self, window):
+        pygame.draw.circle(window, self.color, tuple(map(round, self.position)), self.radius)
+
+    def move(self, dt):
+        self.position += dt * self.velocity
 
 
 class ThrustListener(KeyPressedListener):
@@ -82,3 +105,16 @@ class RotationListener(StateListener):
 
     def perform_alternative(self):
         self.rocket.set_rotation(0)
+
+
+class ShootListener(EventListener):
+    def __init__(self, rocket, key):
+        super().__init__()
+        self.rocket = rocket
+        self.key = key
+
+    def has_found(self, event):
+        return event.type == pygame.KEYDOWN and event.key == self.key
+
+    def perform_action(self):
+        self.rocket.shoot()
