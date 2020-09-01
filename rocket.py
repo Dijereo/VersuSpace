@@ -28,6 +28,7 @@ class Rocket:
 
     def shoot(self):
         self.bullets.append(Bullet(self.color, self.get_vertices()[1], self.angle, 600))
+        print(len(self.bullets))
 
     def get_vertices(self):
         vertices = [Vector2() for _ in range(3)]

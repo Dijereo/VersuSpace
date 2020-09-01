@@ -60,10 +60,7 @@ class MenuScreen(ScreenWithButtons):
 class ComingSoonScreen(ScreenWithButtons):
     def __init__(self, app):
         super().__init__(app)
-        font = pygame.font.SysFont('Consolas', 75)
-        self.text_surface = font.render('Coming Soon', True, Colors.GREEN)
-        self.text_rect = self.text_surface.get_rect()
-        self.text_rect.center = (app.width // 2, app.height // 2)
+        self.text = Text('Consolas', 75, 'Coming Soon', Colors.GREEN, (app.width // 2, app.height // 2))
 
     def construct_buttons(self, app):
         return [('back', Button('Consolas', 30, 'Back', Colors.ORANGE,
@@ -74,22 +71,15 @@ class ComingSoonScreen(ScreenWithButtons):
     def draw(self, window):
         window.fill(Colors.BLACK)
         super().draw(window)
-        window.blit(self.text_surface, self.text_rect)
+        self.text.draw(window)
 
 
 class InstructionScreen(ScreenWithButtons):
     def __init__(self, app):
         super().__init__(app)
-        font = pygame.font.SysFont('Consolas', 20)
-        self.text_surface1 = font.render('Use "A", "W", "D" to move and "E" to shoot', True, Colors.BLUE)
-        self.text_rect1 = self.text_surface1.get_rect()
-        self.text_rect1.center = (app.width // 2, 40)
-        self.text_surface2 = font.render('Use arrow keys to move and "/" to shoot', True, Colors.RED)
-        self.text_rect2 = self.text_surface2.get_rect()
-        self.text_rect2.center = (app.width // 2, 80)
-        self.text_surface3 = font.render('While playing press "Q" to exit', True, Colors.YELLOW)
-        self.text_rect3 = self.text_surface3.get_rect()
-        self.text_rect3.center = (app.width // 2, 120)
+        self.text1 = Text('Consolas', 20, 'Use "A", "W", "D" to move and "E" to shoot', Colors.BLUE, (app.width // 2, 40))
+        self.text2 = Text('Consolas', 20, 'Use arrow keys to move and "/" to shoot', Colors.RED, (app.width // 2, 80))
+        self.text3 = Text('Consolas', 20, 'While playing press "Q" to exit', Colors.YELLOW, (app.width // 2, 120))
 
     def construct_buttons(self, app):
         return [('back', Button('Consolas', 30, 'Back', Colors.ORANGE,
@@ -100,6 +90,6 @@ class InstructionScreen(ScreenWithButtons):
     def draw(self, window):
         window.fill(Colors.BLACK)
         super().draw(window)
-        window.blit(self.text_surface1, self.text_rect1)
-        window.blit(self.text_surface2, self.text_rect2)
-        window.blit(self.text_surface3, self.text_rect3)
+        self.text1.draw(window)
+        self.text2.draw(window)
+        self.text3.draw(window)
